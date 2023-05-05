@@ -49,8 +49,32 @@ def decipher(ciphered_msg, key, alphabet):
     return "decipher"
 
 if __name__ == "__main__":
-    msg = input("Insira uma mensagem: ")
-    key = input("Insira uma chave: ")
+    while True:
+        print("===================================")
+        print("[c] Cifrar\n[d] Decifrar\n[a] Atacar")
+        print("===================================\n\n")
+        
+        action = input(" > ")[0]
+        
+        print("\n")
 
-    print(cipher(msg, key))
-    #print(decipher("qualquer coisa!", "teste", "???"))
+        if action == "c":
+            msg = input("Insira a mensagem:\n  > ")
+            key = input("Insira a chave:\n  > ")
+
+            ciphered_msg = cipher(msg, key) 
+
+            print("\n>> Mensagem cifrada:", ciphered_msg) 
+
+        elif action == "d":
+            ciphered_msg = input("Insira a mensagem:\n  > ")
+            key = input("Insira a chave:\n  > ")
+
+            original_msg = decipher(ciphered_msg, key) 
+
+            print("\n>> Mensagem decifrada:", original_msg) 
+
+        else:
+            break
+
+        input()
