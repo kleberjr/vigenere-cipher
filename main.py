@@ -1,12 +1,6 @@
 import string
 from unicodedata import normalize, category
 
-alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-# The zip function return tuples like ('A', 0), ('B', 1)... 
-letter_to_number = dict(zip(alphabet, range(len(alphabet))))
-number_to_letter = dict(zip(range(len(alphabet)), alphabet))
-
 # Makes it uppercase and eliminates all spaces, numbers and punctuation.
 def sanitize(msg): 
     msg = msg.replace(' ','')
@@ -37,18 +31,41 @@ def cipher(msg, key):
     keystream = sanitize(get_keystream(msg, key))
 
     for idx, char in enumerate(msg):
-        # Operação (Pi + Ki) % tamanho do alfabeto
+        # (Pi + Ki) % alphabet length
         char_pos = (letter_to_number[char] + letter_to_number[keystream[idx]]) % len(alphabet)
-        # Pega a mensagem correspondente
+        # Get correspondent letter
         ciphered_msg.append(number_to_letter[char_pos])
     
     return("".join(ciphered_msg))
 
+# Deciphers a message based on Vigenére Cipher
+def decipher(ciphered_msg, key):
+    original_msg = []
+    gaps = 0
 
-def decipher(ciphered_msg, key, alphabet):
-    return "decipher"
+    ciphered_msg = sanitize(ciphered_msg)
+    keystream = sanitize(get_keystream(ciphered_msg, key))
+
+    for idx, char in enumerate(ciphered_msg):
+        if char not in alphabet:
+            original_msg.append(char)
+            gaps += 1
+            continue
+
+        # Pi - Ki) % alphabet length
+        number = (letter_to_number[char] - letter_to_number[keystream[(idx - gaps) % len(keystream)]]) % len(alphabet)
+        # Get correspondent letter
+        original_msg.append(number_to_letter[number])
+    
+    return("".join(original_msg))
 
 if __name__ == "__main__":
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+    # The zip function return tuples like ('A', 0), ('B', 1)... 
+    letter_to_number = dict(zip(alphabet, range(len(alphabet))))
+    number_to_letter = dict(zip(range(len(alphabet)), alphabet))
+
     while True:
         print("===================================")
         print("[c] Cifrar\n[d] Decifrar\n[a] Atacar")
