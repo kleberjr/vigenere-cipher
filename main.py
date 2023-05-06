@@ -1,5 +1,15 @@
 import string
 from unicodedata import normalize, category
+from vigenere import Vigenere
+
+def read_file():
+    filename = input('Digite o nome do arquivo que esta contida a mensagem (o arquivo tem que esta na pasta /Testes).\n>>> ')
+    try:
+        with open(f'Testes/{filename}', encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        print(f'ERRO: O arquivo {filename} nao existe')
+        return None
 
 # Makes it uppercase and eliminates all spaces, numbers and punctuation.
 def sanitize(msg): 
@@ -59,6 +69,8 @@ def decipher(ciphered_msg, key):
     
     return("".join(original_msg))
 
+vigenere = Vigenere()
+
 if __name__ == "__main__":
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -68,7 +80,7 @@ if __name__ == "__main__":
 
     while True:
         print("===================================")
-        print("[c] Cifrar\n[d] Decifrar\n[a] Atacar")
+        print("[c] Cifrar\n[d] Decifrar\n[a] Atacar\n[s] Sair")
         print("===================================\n\n")
         
         action = input(" > ")[0]
@@ -91,7 +103,26 @@ if __name__ == "__main__":
 
             print("\n>> Mensagem decifrada:", original_msg) 
 
-        else:
+        elif action == "a":
+            mensagem = read_file()
+            if mensagem:
+                language = input("A mensagem esta em portugues ou ingles (PT/EN)?\n>>> ")
+                end = False
+
+                while not end:
+                    key_size = vigenere.key_size(mensagem)
+                    keyword = vigenere.break_keyword(key_size, mensagem.upper(), language)
+
+                    print("Palavra-chave obtida: ", keyword)
+                    print("Mensagem decriptografada:")
+                    print(vigenere.crypt_decrypt(keyword, mensagem, 'D'))
+
+                    ans = input("Deseja refazer o ataque com outro tamanho de chave (S/N)?\n>>> ")
+                    end = (True if ans.upper() == 'N' else False)
+
+        elif action == "s":
             break
+        else:
+            print("Opção inválida! Digite uma entrada válida\n")
 
         input()
