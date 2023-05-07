@@ -1,7 +1,8 @@
 import string
 from unicodedata import normalize, category
-from vigenere import Vigenere
+from vigenere import cifraDeVigenere
 
+# funcao auxiliar de leitura de arquivo para quebra da cifra de vigenere por analise de frequencia
 def read_file():
     filename = input('Digite o nome do arquivo que esta contida a mensagem (o arquivo tem que esta na pasta /Testes).\n>>> ')
     try:
@@ -11,7 +12,7 @@ def read_file():
         print(f'ERRO: O arquivo {filename} nao existe')
         return None
 
-# Makes it uppercase and eliminates all spaces, numbers and punctuation.
+# funcao auxiliar que transforma os caracteres em maiusculas, alem de eliminar os espacos, pontuacoes e numeros
 def sanitize(msg): 
     msg = msg.replace(' ','')
     msg = ''.join([i for i in msg if not i.isdigit()])
@@ -21,7 +22,7 @@ def sanitize(msg):
 
     return msg
 
-# Repeats the key until it fits the text
+# Alinha a chave com o texto para garantir que cada caractere do texto original seja cifrado com algum caractere
 def get_keystream(msg, key):
     key = list(key)
 
@@ -33,7 +34,7 @@ def get_keystream(msg, key):
     
     return("".join(key)) 
 
-# Cipher a message based on Vigenère Cipher
+# cifra a mensagem
 def cipher(msg, key):
     ciphered_msg = []
 
@@ -41,14 +42,14 @@ def cipher(msg, key):
     keystream = sanitize(get_keystream(msg, key))
 
     for idx, char in enumerate(msg):
-        # (Pi + Ki) % alphabet length
+        # (Pi + Ki) % tamanho do alfabeto
         char_pos = (letter_to_number[char] + letter_to_number[keystream[idx]]) % len(alphabet)
-        # Get correspondent letter
+        # Pega a letra correspondente a do texto cifrado
         ciphered_msg.append(number_to_letter[char_pos])
     
     return("".join(ciphered_msg))
 
-# Deciphers a message based on Vigenére Cipher
+# decrifra a mensagem
 def decipher(ciphered_msg, key):
     original_msg = []
     gaps = 0
@@ -62,14 +63,14 @@ def decipher(ciphered_msg, key):
             gaps += 1
             continue
 
-        # Pi - Ki) % alphabet length
+        # (Pi - Ki) % tamanho do alfabeto
         number = (letter_to_number[char] - letter_to_number[keystream[(idx - gaps) % len(keystream)]]) % len(alphabet)
-        # Get correspondent letter
+        # Pega a letra correspondente a do texto original
         original_msg.append(number_to_letter[number])
     
     return("".join(original_msg))
 
-vigenere = Vigenere()
+vigenere = cifraDeVigenere()
 
 if __name__ == "__main__":
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -83,7 +84,7 @@ if __name__ == "__main__":
         print("[c] Cifrar\n[d] Decifrar\n[a] Atacar\n[s] Sair")
         print("===================================\n\n")
         
-        action = input(" > ")[0]
+        action = (input(" > ")[0])
         
         print("\n")
 
